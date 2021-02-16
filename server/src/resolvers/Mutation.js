@@ -3,13 +3,17 @@ const jwt = require('jsonwebtoken');
 const { APP_SECRET } = require('../utils');
 
 async function post(parent, args, context, info) {
-  const { userId } = context;
+  let { userId } = context;
+
+  if (!userId) userId = '4';
+  console.log(userId);
 
   const newLink = await context.prisma.link.create({
     data: {
       url: args.url,
       description: args.description,
-      postedBy: { connect: { id: userId } }
+      //a kludge id: 4 before I overtake it in learning gide
+      postedBy: { connect: { id: 4 } }
     }
   });
   context.pubsub.publish('NEW_LINK', newLink);
