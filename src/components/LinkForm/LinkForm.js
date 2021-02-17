@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
+import { useHistory } from 'react-router';
 
 // gql-lib: parse tag strings into document by defined schema
 const CREATE_LINK_MUTATION = gql`
@@ -26,8 +27,10 @@ const LinkForm = () => {
     variables: {
       description: formState.description,
       url: formState.url
-    }
+    },
+    onCompleted: () => history.push('/')
   });
+  const history = useHistory();
 
   const onInputChangeHandler = event => {
     if (event.target.id === 'url') {
