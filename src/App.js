@@ -2,6 +2,7 @@ import React from 'react';
 import LinkList from './components/LinkList/LinkList';
 import CreateLinkForm from './components/LinkForm/LinkForm';
 import Header from './components/Header/Header';
+import Login from './components/Login/Login';
 import { Switch, Route } from 'react-router-dom';
 
 
@@ -17,6 +18,7 @@ function App() {
             path="/create"
             component={CreateLinkForm}
           />
+          <Route exact path="/login" component={Login} />
         </Switch>
       </div>
     </div>

@@ -12,8 +12,7 @@ async function post(parent, args, context, info) {
     data: {
       url: args.url,
       description: args.description,
-      //a kludge id: 4 before I overtake it in learning gide
-      postedBy: { connect: { id: 3 } }
+      postedBy: { connect: { id: userId } }
     }
   });
   context.pubsub.publish('NEW_LINK', newLink);
