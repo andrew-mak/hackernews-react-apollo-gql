@@ -15,7 +15,7 @@ const Header = () => {
         <div className="fw7 mr1">Hacker News</div>
         <Link to="/"
           className="ml1 no-underline black">
-          All links
+          new
         </Link>
         <div className="ml1">|</div>
         <Link to="/top"
@@ -34,7 +34,7 @@ const Header = () => {
             <Link
               to="/create"
               className="ml1 no-underline black">
-              Add link
+              Submit
             </Link>
           </div>
         )}
