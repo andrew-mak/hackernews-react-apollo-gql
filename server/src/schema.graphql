@@ -5,7 +5,7 @@ type Query {
     skip: Int
     take: Int
     orderBy: LinkOrderByInput
-  ): Feed!
+  ): [Link]!
 }
 
 type Feed {

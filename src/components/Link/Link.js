@@ -1,31 +1,11 @@
 import React from 'react';
-import { useMutation, gql } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { timeDifferenceForDate } from '../../util/util';
 import { AUTH_TOKEN, LINKS_PER_PAGE } from '../../constants';
-import { FEED_QUERY } from '../LinkList/LinkList';
-
-const VOTE_MUTATION = gql`
-  mutation VoteMutation($linkId: ID!) {
-    vote(linkId: $linkId) {
-      id
-      link {
-        id
-        votes {
-          id
-          user {
-            id
-          }
-        }
-      }
-      user {
-        id
-      }
-    }
-  }
-`;
+import { VOTE_MUTATION, FEED_QUERY } from '../../GQLQueries';
 
 const Link = (props) => {
-
+  // console.log('[Render] Link');
   const { link } = props;
   const authToken = localStorage.getItem(AUTH_TOKEN);
 
@@ -37,10 +17,14 @@ const Link = (props) => {
     variables: {
       linkId: link.id
     },
-    
     update(cache, { data: { vote } }) {
       const { feed } = cache.readQuery({
-        query: FEED_QUERY
+        query: FEED_QUERY,
+        variables: {
+          take,
+          skip,
+          orderBy
+        }
       });
 
       const updatedLinks = feed.links.map((feedLink) => {
@@ -59,10 +43,15 @@ const Link = (props) => {
           feed: {
             links: updatedLinks
           }
+        },
+        variables: {
+          take,
+          skip,
+          orderBy
         }
       });
     }
-    });
+  });
 
   return (
     <div className="flex mt2 items-start">

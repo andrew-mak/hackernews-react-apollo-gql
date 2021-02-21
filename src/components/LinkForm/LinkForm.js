@@ -1,35 +1,23 @@
 import React, { useState } from 'react';
-import { useMutation, gql } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useHistory } from 'react-router';
 import { LINKS_PER_PAGE } from '../../constants';
-import { FEED_QUERY } from '../LinkList/LinkList';
-
-// gql-lib: parse tag strings into document by defined schema
-const CREATE_LINK_MUTATION = gql`
-  mutation PostMutation(
-    $description: String!
-    $url: String!
-  ) {
-    post(description: $description, url: $url) {
-      id
-      createdAt
-      url
-      description
-    }
-  }
-`;
+import { FEED_QUERY, CREATE_LINK_MUTATION } from '../../GQLQueries';
 
 const LinkForm = () => {
   const [formState, setFormState] = useState({
     description: '',
     url: ''
   });
+  const history = useHistory();
+  
   //send mutations to GraphQL server
   const [createLink] = useMutation(CREATE_LINK_MUTATION, {
     variables: {
       description: formState.description,
       url: formState.url
     },
+    awaitRefetchQueries: true,
     update: (cache, { data: { post } }) => {
       const take = LINKS_PER_PAGE;
       const skip = 0;
@@ -58,10 +46,12 @@ const LinkForm = () => {
         }
       });
     },
-    onCompleted: () => history.push('/new/1')
+    onCompleted: () => {
+      console.log('Mutation completed');
+      history.push('/new/1')
+    }
   });
-  const history = useHistory();
-
+  
   const onInputChangeHandler = event => {
     if (event.target.id === 'url') {
       setFormState({
@@ -77,13 +67,10 @@ const LinkForm = () => {
     }
   };
 
-  const onSubmitHandler = event => {
+  const onSubmitHandler = async event => {
     event.preventDefault();
-    createLink();
-    setFormState({
-      description: '',
-      url: ''
-    })
+    console.log('WRITE ');
+    await createLink();
   }
 
   return (

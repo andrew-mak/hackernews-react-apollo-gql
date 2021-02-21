@@ -1,61 +1,91 @@
 import React, { useEffect, useState } from 'react';
 import Link from '../Link/Link';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
+import { LINKS_PER_PAGE } from '../../constants';
+import { FEED_QUERY } from '../../GQLQueries';
+import { getLinksToRender } from '../../util/util';
 
-// gql-lib: parse tag strings into document by defined schema
-export const FEED_QUERY = gql`
-  {
-    feed {
-      id
-      links {
-        id
-        createdAt
-        url
-        description
-        postedBy {
-          id
-          name
-        }
-        votes {
-          id
-          user {
-            id
-          }
-        }
-      }
-    }
-  }
-`;
+const LinkList = React.memo(() => {
+  console.log('[Render] LinkList');
+  const [linksState, setLinksState] = useState({
+    prevSkip: 0,
+    prevTake: LINKS_PER_PAGE || 5,
+    linksCount: 16
+  });
 
-const LinkList = () => {
   //send Query to GraphQL server
-  const { data, error, loading } = useQuery(FEED_QUERY);
-  const [posts, setPosts] = useState([]);
-  const [message, setMessage] = useState('');
+  const { loading, data, error, fetchMore } = useQuery(FEED_QUERY, {
+    variables: {
+      skip: linksState.prevSkip,
+      take: LINKS_PER_PAGE,
+    },
+    onCompleted: () => {
+      // if (data.feed.count !== linksState.linksCount) setLinksState({ ...linksState, linksCount: data.feed.count });
+      console.log(data);
+    }
+  });
+
+  const fetchPageHandler = direction => {
+    let skip;
+    direction === 'next'
+      ? skip = linksState.prevSkip + LINKS_PER_PAGE
+      : skip = linksState.prevSkip - LINKS_PER_PAGE;
+
+    // if (direction === 'next' && linksState.linksCount - skip <= 0) return
+    // if (direction === 'prev' && linksState.prevSkip <= 0) return
+
+    fetchMore({
+      variables: { skip, LINKS_PER_PAGE }
+    }).then(fetchedData => {
+      setLinksState({
+        ...linksState,
+        prevSkip: skip,
+        prevTake: LINKS_PER_PAGE,
+        // count: fetchedData.data.feed.count
+      })
+    })
+
+  };
 
   useEffect(() => {
-    if (loading) setMessage('Loading...')
-    else if (error) setMessage(error.message + '\n Please, try again.');
-    else if (data.feed.links) {
-      setPosts(data.feed.links);
-      setMessage(null);
-    }
-  }, [loading, data, error, setMessage, setPosts]);
+    console.log('MOUNT');
+    return () => {
+      console.log('UNMOUNT');
+    };
+  }, []);
 
-  let result;
-  if (posts.length > 0) {
-    result = <>{(posts.map((link, index) => (
-      <Link key={link.id} link={link} index={index} />)
-    ))}</>
-      ;
+  // useEffect(() => {
+  //   console.log('linksState: ', linksState);
+  //   console.log('data: ', data);
+  // });
+
+  let links = null;
+  if (data) {
+    links = getLinksToRender(true, data).map(
+      (link, index) => (
+        <Link
+          key={link.id}
+          link={link}
+          index={index}
+        />)
+    );
   }
-  else result = message;
 
   return (
-    <div>
-      {result}
-    </div>
+    <>
+      {
+        error ? <pre>{JSON.stringify(error, null, 2)}</pre>
+          : loading ? <p> Loading...</p>
+            : links && <>
+              {links}
+              <div className="flex ml4 mv3 gray">
+                <div className="pointer mr2" onClick={() => fetchPageHandler('prev')}>Previous</div>
+                <div className="pointer" onClick={() => fetchPageHandler('next')}>Next</div>
+              </div>
+            </>
+      }
+    </>
   );
-};
+});
 
 export default LinkList;

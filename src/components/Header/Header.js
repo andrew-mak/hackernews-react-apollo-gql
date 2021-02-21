@@ -4,7 +4,10 @@ import { AUTH_TOKEN } from '../../constants';
 
 const Header = () => {
   const history = useHistory();
+
   const authToken = localStorage.getItem(AUTH_TOKEN);
+  console.log('[Render] Header Auth:', Boolean(authToken));
+
   const logoutHandler = () => {
     localStorage.removeItem(AUTH_TOKEN);
     history.push(`/`);
@@ -12,47 +15,26 @@ const Header = () => {
   return (
     <div className="flex pa1 justify-between nowrap orange">
       <div className="flex flex-fixed black">
+
         <div className="fw7 mr1">Hacker News</div>
-        <Link to="/"
-          className="ml1 no-underline black">
-          new
-        </Link>
+        <Link to="/" className="ml1 no-underline black">new</Link>
         <div className="ml1">|</div>
-        <Link to="/top"
-          className="ml1 no-underline black">
-          Top
-        </Link>
+        <Link to="/top" className="ml1 no-underline black">top</Link>
         <div className="ml1">|</div>
-        <Link
-          to="/search"
-          className="ml1 no-underline black">
-          Search
-        </Link>
+        <Link to="/search" className="ml1 no-underline black">search</Link>
         {authToken && (
           <div className="flex">
             <div className="ml1">|</div>
-            <Link
-              to="/create"
-              className="ml1 no-underline black">
-              Submit
-            </Link>
+            <Link to="/create" className="ml1 no-underline black">submit</Link>
           </div>
         )}
       </div>
+      
       <div className="flex flex-fixed">
-        {authToken ? (
-          <div
-            className="ml1 pointer black"
-            onClick={logoutHandler}>
-            Logout
-          </div>
-        ) : (
-            <Link
-              to="/login"
-              className="ml1 no-underline black">
-              login
-            </Link>
-          )}
+        {authToken
+          ? (<div className="ml1 pointer black" onClick={logoutHandler}>logout</div>)
+          : (<Link to="/login" className="ml1 no-underline black">login</Link>)
+        }
       </div>
     </div>
   );

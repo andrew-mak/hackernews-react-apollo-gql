@@ -1,3 +1,4 @@
+
 function timeDifference(current, previous) {
   const milliSecondsPerMinute = 60 * 1000;
   const milliSecondsPerHour = milliSecondsPerMinute * 60;
@@ -43,3 +44,16 @@ export function timeDifferenceForDate(date) {
   const updated = new Date(date).getTime();
   return timeDifference(now, updated);
 }
+
+export const getLinksToRender = (isNewPage, data) => {
+  if (isNewPage) {
+    return data.feed;
+  }
+
+  const rankedLinks = data.feed.links.slice();
+  console.log(data);
+  rankedLinks.sort(
+    (l1, l2) => l2.votes.length - l1.votes.length
+  );
+  return rankedLinks;
+};
