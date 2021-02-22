@@ -28,8 +28,8 @@ export const FEED_QUERY = gql`
     $orderBy: LinkOrderByInput
   ) {
     feed(take: $take, skip: $skip, orderBy: $orderBy) {
-      # id
-      # links {
+      id
+      links {
         id
         createdAt
         url
@@ -46,7 +46,32 @@ export const FEED_QUERY = gql`
         }
       }
       # count
-    # }
+    }
+  }
+`;
+
+export const TOP_FEED_QUERY = gql`
+  query TopFeedQuery(
+    $take: Int
+    $skip: Int
+    $orderBy: LinkOrderByInput
+  ) {
+    topFeed(take: $take, skip: $skip, orderBy: $orderBy) {
+        id
+        createdAt
+        url
+        description
+        postedBy {
+          id
+          name
+        }
+        votes {
+          id
+          user {
+            id
+          }
+        }
+      }
   }
 `;
 

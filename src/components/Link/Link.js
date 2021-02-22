@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMutation } from '@apollo/client';
 import { timeDifferenceForDate } from '../../util/util';
-import { AUTH_TOKEN, LINKS_PER_PAGE } from '../../constants';
+import { AUTH_TOKEN, LINKS_PER_FETCH } from '../../constants';
 import { VOTE_MUTATION, FEED_QUERY } from '../../GQLQueries';
 
 const Link = (props) => {
@@ -9,7 +9,7 @@ const Link = (props) => {
   const { link } = props;
   const authToken = localStorage.getItem(AUTH_TOKEN);
 
-  const take = LINKS_PER_PAGE;
+  const take = LINKS_PER_FETCH;
   const skip = 0;
   const orderBy = { createdAt: 'desc' };
 

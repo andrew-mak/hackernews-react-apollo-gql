@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useHistory } from 'react-router';
-import { LINKS_PER_PAGE } from '../../constants';
+import { LINKS_PER_FETCH } from '../../constants';
 import { FEED_QUERY, CREATE_LINK_MUTATION } from '../../GQLQueries';
 
 const LinkForm = () => {
@@ -19,7 +19,7 @@ const LinkForm = () => {
     },
     awaitRefetchQueries: true,
     update: (cache, { data: { post } }) => {
-      const take = LINKS_PER_PAGE;
+      const take = LINKS_PER_FETCH;
       const skip = 0;
       const orderBy = { createdAt: 'desc' };
 

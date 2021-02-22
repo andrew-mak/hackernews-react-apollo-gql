@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import Link from '../Link/Link';
 import { useQuery } from '@apollo/client';
-import { FEED_QUERY } from '../../GQLQueries';
+import { TOP_FEED_QUERY } from '../../GQLQueries';
 import { getLinksToRender } from '../../util/util';
 
 const Top = () => {
   console.log('[Render] Top');
 
   //send Query to GraphQL server
-  const { data, loading, error } = useQuery(FEED_QUERY, {
+  const { data, loading, error } = useQuery(TOP_FEED_QUERY, {
     variables: {
       skip: 0,
       take: 100
@@ -24,7 +24,9 @@ const Top = () => {
 
   let links = null;
   if (data) {
-    links = getLinksToRender(true, data).map(
+    console.log(data)
+    links = getLinksToRender(data)
+      .map(
       (link, index) => (
         <Link
           key={link.id}

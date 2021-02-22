@@ -18,18 +18,25 @@ async function feed(parent, args, context, info) {
   // const count = await context.prisma.link.count({ where });
   console.log('SKIP: ', args.skip, ' Links: ', links.length);
 
-  // let queryId = `main-feed-Take:${args.take}-Skip:${args.skip}->${links.length}`;
+  let queryId = `main-feed T:${args.take} S:${args.skip}->${links.length}`;
   // let queryId = `main-feed`;
   // if (args.take > 50) queryId = `top-feed-Take:${args.take}->${links.length}`;
 
-  // return {
-  //   id: queryId,
-  //   links,
-  //   count
-  // };
-  return [...links]
+  return {
+    id: queryId,
+    links,
+    // count
+  };
+
+  // return [...links]
+}
+
+async function topFeed(parent, args, context, info) {
+  console.log('SKIP: ', args.skip);
+  const result = await feed(parent, args, context, info);
+  return result.links
 }
 
 module.exports = {
-  feed
+  feed, topFeed
 };

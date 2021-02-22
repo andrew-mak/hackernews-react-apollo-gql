@@ -1,50 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import Link from '../Link/Link';
 import { useQuery } from '@apollo/client';
-import { LINKS_PER_PAGE } from '../../constants';
+import { LINKS_PER_FETCH } from '../../constants';
 import { FEED_QUERY } from '../../GQLQueries';
-import { getLinksToRender } from '../../util/util';
 
-const LinkList = React.memo(() => {
+const LinkList = () => {
   console.log('[Render] LinkList');
   const [linksState, setLinksState] = useState({
     prevSkip: 0,
-    prevTake: LINKS_PER_PAGE || 5,
-    linksCount: 16
+    prevTake: LINKS_PER_FETCH || 5
   });
 
   //send Query to GraphQL server
-  const { loading, data, error, fetchMore } = useQuery(FEED_QUERY, {
+  
+  const { loading, data, error, previousData, fetchMore } = useQuery(FEED_QUERY, {
     variables: {
       skip: linksState.prevSkip,
-      take: LINKS_PER_PAGE,
+      take: LINKS_PER_FETCH
     },
     onCompleted: () => {
-      // if (data.feed.count !== linksState.linksCount) setLinksState({ ...linksState, linksCount: data.feed.count });
-      console.log(data);
+      console.log(previousData);
     }
   });
 
-  const fetchPageHandler = direction => {
-    let skip;
-    direction === 'next'
-      ? skip = linksState.prevSkip + LINKS_PER_PAGE
-      : skip = linksState.prevSkip - LINKS_PER_PAGE;
+  // const cachedLinks  = client.readQuery({
+  //   query: FEED_QUERY,
+  //   variables: {
+  //     skip: linksState.prevSkip,
+  //     take: LINKS_PER_PAGE
+  //   }
+  // });
+  // console.log('cachedLinks: ', cachedLinks);
 
-    // if (direction === 'next' && linksState.linksCount - skip <= 0) return
-    // if (direction === 'prev' && linksState.prevSkip <= 0) return
+  const fetchPageHandler = () => {
+    let skip = linksState.prevSkip + LINKS_PER_FETCH;
 
     fetchMore({
-      variables: { skip, LINKS_PER_PAGE }
+      variables: { skip, LINKS_PER_FETCH }
     }).then(fetchedData => {
+      skip = linksState.prevSkip + fetchedData.data.feed.length;
+
       setLinksState({
         ...linksState,
         prevSkip: skip,
-        prevTake: LINKS_PER_PAGE,
-        // count: fetchedData.data.feed.count
+        prevTake: LINKS_PER_FETCH
       })
     })
-
   };
 
   useEffect(() => {
@@ -54,14 +55,15 @@ const LinkList = React.memo(() => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   console.log('linksState: ', linksState);
-  //   console.log('data: ', data);
-  // });
+  useEffect(() => {
+    console.log('linksState: ', linksState);
+    // console.log('data: ', data);
+  });
 
   let links = null;
   if (data) {
-    links = getLinksToRender(true, data).map(
+    console.log(data)
+    links = data.feed.links.map(
       (link, index) => (
         <Link
           key={link.id}
@@ -76,16 +78,17 @@ const LinkList = React.memo(() => {
       {
         error ? <pre>{JSON.stringify(error, null, 2)}</pre>
           : loading ? <p> Loading...</p>
-            : links && <>
+            : links &&
+            <>
               {links}
               <div className="flex ml4 mv3 gray">
-                <div className="pointer mr2" onClick={() => fetchPageHandler('prev')}>Previous</div>
-                <div className="pointer" onClick={() => fetchPageHandler('next')}>Next</div>
+                <div className="pointer" onClick={fetchPageHandler}>More</div>
+                {loading ? <p>Loading...</p> : null}
               </div>
             </>
       }
     </>
   );
-});
+};
 
 export default LinkList;

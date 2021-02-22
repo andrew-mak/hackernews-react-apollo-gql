@@ -47,10 +47,9 @@ const cache = new InMemoryCache({
     Query: {
       fields: {
         feed: {
-          keyArgs: false,
-          // keyArgs: ['id'],
-          merge(existing, incoming) {
-            if (!incoming) {
+          keyArgs: ['id'],
+          merge(existing, incoming, { args }) {
+            if (!incoming || incoming.length === 0) {
               console.log('[Merge] return existing');
               return existing;
             }
@@ -59,13 +58,14 @@ const cache = new InMemoryCache({
               return incoming;
             }
 
-            console.log('[Merge] existing: ', existing);
-            console.log('[Merge] incoming: ', incoming);
+            // console.log('[Merge] existing: ', existing);
+            // console.log('[Merge] incoming: ', incoming);
 
-            const result = [
+            const result = {
               ...existing,
-              ...incoming,
-            ];
+              id: incoming.id,
+              links: [...existing, ...incoming],
+          };
             console.log(result)
             return result;
           }
