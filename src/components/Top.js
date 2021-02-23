@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import Link from '../Link/Link';
+import Link from './Link';
 import { useQuery } from '@apollo/client';
-import { FEED_TOP_QUERY } from '../../GQLQueries';
-import { getLinksToRender } from '../../util/util';
+import { FEED_TOP_QUERY } from '../client/gqlQueries';
+import { getLinksToRender } from '../util/util';
 
 const Top = () => {
   console.log('[Render] Top');
@@ -12,7 +12,9 @@ const Top = () => {
     variables: {
       skip: 0,
       take: 100
-    }
+    },
+    onError: error => console.log(error),
+    fetchPolicy: 'cache-and-network'
   });
 
   useEffect(() => {

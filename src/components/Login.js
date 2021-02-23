@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import React, { useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
-import { AUTH_TOKEN } from '../../constants';
-import { LOGIN_MUTATION, SIGNUP_MUTATION } from '../../GQLQueries';
+import { AuthContext } from '../context/auth-context';
+import { LOGIN_MUTATION, SIGNUP_MUTATION } from '../client/gqlQueries';
 
 const Login = () => {
+
+  const { setAuth } = useContext(AuthContext);
   const history = useHistory();
   const [formState, setFormState] = useState({
     login: true,
     email: '',
     password: '',
-    name: ''
+    name: '',
+    error: ''
   });
 
   const [loginMutQuery] = useMutation(LOGIN_MUTATION, {
@@ -19,9 +22,12 @@ const Login = () => {
       password: formState.password
     },
     onCompleted: ({ login }) => {
-      // not good decision store token in a localStorage, just tutorial
-      localStorage.setItem(AUTH_TOKEN, login.token);
+      setAuth(login.token);
       history.push('/');
+    },
+    onError: error => {
+      console.log(error);
+      setFormState({ ...formState, error: error.message});
     }
   });
 
@@ -32,9 +38,12 @@ const Login = () => {
       password: formState.password
     },
     onCompleted: ({ signup }) => {
-      // not good decision store token in a localStorage, just tutorial
-      localStorage.setItem(AUTH_TOKEN, signup.token);
+      setAuth(signup.token);
       history.push('/');
+    },
+    onError: error => {
+      console.log(error);
+      setFormState({ ...formState, error: error.message });
     }
   });
 
@@ -58,7 +67,8 @@ const Login = () => {
     }
     setFormState({
       ...formState,
-      ...update
+      ...update,
+      error: ''
     })
   };
 
@@ -88,6 +98,7 @@ const Login = () => {
           type="password"
           placeholder="Choose a safe password"
         />
+        {formState.error && <div className="dark-red f6" >{formState.error}</div>}
       </div>
       <div className="flex mt3">
         <button

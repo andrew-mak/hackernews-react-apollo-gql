@@ -1,18 +1,19 @@
 import React, { useEffect } from 'react';
-import Link from '../Link/Link';
+import Link from './Link';
 import { useQuery } from '@apollo/client';
-import { LINKS_PER_FETCH } from '../../constants';
-import { FEED_QUERY } from '../../GQLQueries';
+import { LINKS_PER_FETCH } from '../util/constants';
+import { FEED_QUERY } from '../client/gqlQueries';
 
 const LinkList = () => {
-  console.log('[Render] LinkList');
+  console.log('[LinkList]');
 
   //send Query to GraphQL server
   const { loading, data, error, fetchMore } = useQuery(FEED_QUERY, {
     variables: { take: LINKS_PER_FETCH },
     onCompleted: () => {
-      console.log('Feed Query completed');
-    }
+      // console.log('Feed Query completed');
+    },
+    onError: error => console.log(error)
   });
 
   const fetchMoreHandler = async () => {
@@ -21,7 +22,7 @@ const LinkList = () => {
       variables: { cursor: data.feed.cursor, take: LINKS_PER_FETCH + 1 }
     }).then(() =>
       console.log('FetchMore completed')
-    );
+    ).catch(error => console.log(error));
   };
 
   useEffect(() => {

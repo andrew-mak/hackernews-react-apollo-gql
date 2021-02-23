@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useMutation } from '@apollo/client';
-import { timeDifferenceForDate } from '../../util/util';
-import { AUTH_TOKEN, LINKS_PER_FETCH } from '../../constants';
-import { VOTE_MUTATION, FEED_QUERY } from '../../GQLQueries';
+import { timeDifferenceForDate } from '../util/util';
+import { LINKS_PER_FETCH } from '../util/constants';
+import { AuthContext } from '../context/auth-context';
+import { VOTE_MUTATION, FEED_QUERY } from '../client/gqlQueries';
 
 const Link = (props) => {
-  // console.log('[Render] Link');
+  const { authToken } = useContext(AuthContext);
+  console.log('[Link]');
   const { link } = props;
-  const authToken = localStorage.getItem(AUTH_TOKEN);
+
 
   const take = LINKS_PER_FETCH;
   const skip = 0;
@@ -24,7 +26,8 @@ const Link = (props) => {
           take,
           skip,
           orderBy
-        }
+        },
+        onError: error => console.log(error)
       });
 
       const updatedLinks = feed.links.map((feedLink) => {
@@ -48,9 +51,11 @@ const Link = (props) => {
           take,
           skip,
           orderBy
-        }
+        },
+        onError: error => console.log(error)
       });
-    }
+    },
+    onError: error => console.log(error)
   });
 
   return (
@@ -68,16 +73,14 @@ const Link = (props) => {
       </div>
       <div className="ml1">
         <div className="f6-ns black">
-          {link.description +"\t"}
+          {link.description + "\t"}
           <a href={link.url} className="f7-ns dark-blue no-underline underline-hover">({new URL(link.url).host})</a>
         </div>
-        {authToken && (
-          <div className="f7 lh-copy gray">
-            {link.votes.length} votes | by{' '}
-            {link.postedBy ? link.postedBy.name : 'Unknown'}{' '}
-            {timeDifferenceForDate(link.createdAt)}
-          </div>
-        )}
+        <div className="f7 lh-copy gray">
+          {link.votes.length} votes | by{' '}
+          {link.postedBy ? link.postedBy.name : 'Unknown'}{' '}
+          {timeDifferenceForDate(link.createdAt)}
+        </div>
       </div>
     </div>
   );

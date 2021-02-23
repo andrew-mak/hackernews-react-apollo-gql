@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { AUTH_TOKEN } from '../../constants';
+
+import { AuthContext } from "../context/auth-context";
 
 const Header = () => {
+  const { authToken, setAuth } = useContext(AuthContext);
   const history = useHistory();
 
-  const authToken = localStorage.getItem(AUTH_TOKEN);
-  console.log('[Render] Header Auth:', Boolean(authToken));
+  console.log('[Header]');
 
   const logoutHandler = () => {
-    localStorage.removeItem(AUTH_TOKEN);
+    setAuth(null);
     history.push(`/`);
   }
+
   return (
     <div className="flex pa1 justify-between nowrap orange">
       <div className="flex flex-fixed black">
@@ -22,14 +24,12 @@ const Header = () => {
         <Link to="/top" className="ml1 no-underline black">top</Link>
         <div className="ml1">|</div>
         <Link to="/search" className="ml1 no-underline black">search</Link>
-        {authToken && (
-          <div className="flex">
-            <div className="ml1">|</div>
-            <Link to="/create" className="ml1 no-underline black">submit</Link>
-          </div>
-        )}
+        {authToken && <div className="flex">
+          <div className="ml1">|</div>
+          <Link to="/create" className="ml1 no-underline black">submit</Link>
+        </div>}
       </div>
-      
+
       <div className="flex flex-fixed">
         {authToken
           ? (<div className="ml1 pointer black" onClick={logoutHandler}>logout</div>)

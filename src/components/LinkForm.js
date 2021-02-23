@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useHistory } from 'react-router';
-import { LINKS_PER_FETCH } from '../../constants';
-import { FEED_QUERY, CREATE_LINK_MUTATION } from '../../GQLQueries';
+import { LINKS_PER_FETCH } from '../util/constants';
+import { FEED_QUERY, CREATE_LINK_MUTATION } from '../client/gqlQueries';
 
 const LinkForm = () => {
   const [formState, setFormState] = useState({
@@ -10,13 +10,14 @@ const LinkForm = () => {
     url: ''
   });
   const history = useHistory();
-  
+
   //send mutations to GraphQL server
   const [createLink] = useMutation(CREATE_LINK_MUTATION, {
     variables: {
       description: formState.description,
       url: formState.url
     },
+    onError: error => console.log(error),
     awaitRefetchQueries: true,
     update: (cache, { data: { post } }) => {
       const take = LINKS_PER_FETCH;
@@ -29,7 +30,8 @@ const LinkForm = () => {
           take,
           skip,
           orderBy
-        }
+        },
+        onError: error => console.log(error)
       });
 
       cache.writeQuery({
@@ -43,7 +45,8 @@ const LinkForm = () => {
           take,
           skip,
           orderBy
-        }
+        },
+        onError: error => console.log(error)
       });
     },
     onCompleted: () => {
@@ -51,7 +54,7 @@ const LinkForm = () => {
       history.push('/new/1')
     }
   });
-  
+
   const onInputChangeHandler = event => {
     if (event.target.id === 'url') {
       setFormState({

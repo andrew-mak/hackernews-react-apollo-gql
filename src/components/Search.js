@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
-import { FEED_SEARCH_QUERY } from '../../GQLQueries';
-import Link from '../Link/Link';
+import { FEED_SEARCH_QUERY } from '../client/gqlQueries';
+import Link from './Link';
 
 const Search = () => {
 
@@ -14,7 +14,11 @@ const Search = () => {
   };
 
   const searchButtonHandler = () => {
-    executeSearch({ variables: { filter: searchFilter } });
+    executeSearch({
+      variables: { filter: searchFilter },
+      onError: error => console.log(error),
+      fetchPolicy: 'cache-and-network'
+    });
   };
 
   let links = null;
@@ -34,15 +38,15 @@ const Search = () => {
   if (error) message = <p>{error.message + '\n Please, try again.'}</p>
 
   return (
-      <>
-        <div>
-          Search {"\t"}
-          <input type="text" onChange={searchFilterHandler} />
-          <button onClick={searchButtonHandler} >OK</button>
-        </div>
-        {links || message}
-      </>
-    );
+    <>
+      <div>
+        Search {"\t"}
+        <input type="text" onChange={searchFilterHandler} />
+        <button onClick={searchButtonHandler} >OK</button>
+      </div>
+      {links || message}
+    </>
+  );
 };
 
 export default Search;

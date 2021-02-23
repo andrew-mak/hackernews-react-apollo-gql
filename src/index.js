@@ -3,15 +3,18 @@ import ReactDOM from 'react-dom';
 import './styles/index.css';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
-import ApolloClient from './configApolloClient';
+import ApolloClient from './client/apolloClientConfig';
 import reportWebVitals from './reportWebVitals';
 import { ApolloProvider } from '@apollo/client';
+import AuthProvider from './context/auth-context';
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <ApolloProvider client={ApolloClient}>
-        <App />
+        <AuthProvider >
+          <App />
+        </AuthProvider>
       </ApolloProvider>
     </BrowserRouter>
   </React.StrictMode>,
