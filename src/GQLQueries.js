@@ -22,13 +22,9 @@ export const VOTE_MUTATION = gql`
 `;
 
 export const FEED_QUERY = gql`
-  query FeedQuery(
-    $take: Int
-    $skip: Int
-    $orderBy: LinkOrderByInput
-  ) {
-    feed(take: $take, skip: $skip, orderBy: $orderBy) {
-      id
+  query FeedQuery( $take: Int, $cursor: ID) {
+    feed(take: $take, cursor: $cursor) {
+      cursor
       links {
         id
         createdAt
@@ -45,18 +41,13 @@ export const FEED_QUERY = gql`
           }
         }
       }
-      # count
     }
   }
 `;
 
-export const TOP_FEED_QUERY = gql`
-  query TopFeedQuery(
-    $take: Int
-    $skip: Int
-    $orderBy: LinkOrderByInput
-  ) {
-    topFeed(take: $take, skip: $skip, orderBy: $orderBy) {
+export const FEED_TOP_QUERY = gql`
+  query subfeed( $take: Int, $orderBy: LinkOrderByInput) {
+    subfeed(take: $take, orderBy: $orderBy) {
         id
         createdAt
         url
@@ -139,10 +130,8 @@ export const CREATE_LINK_MUTATION = gql`
 `;
 
 export const FEED_SEARCH_QUERY = gql`
-  query FeedSearchQuery($filter: String!) {
-    feed(filter: $filter) {
-      id
-      links {
+  query subfeed($filter: String!) {
+    subfeed(filter: $filter) {
         id
         url
         description
@@ -155,7 +144,6 @@ export const FEED_SEARCH_QUERY = gql`
           id
           user {
             id
-          }
         }
       }
     }

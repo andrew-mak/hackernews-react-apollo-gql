@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Link from '../Link/Link';
 import { useQuery } from '@apollo/client';
 import { LINKS_PER_FETCH } from '../../constants';
@@ -6,46 +6,22 @@ import { FEED_QUERY } from '../../GQLQueries';
 
 const LinkList = () => {
   console.log('[Render] LinkList');
-  const [linksState, setLinksState] = useState({
-    prevSkip: 0,
-    prevTake: LINKS_PER_FETCH || 5
-  });
 
   //send Query to GraphQL server
-  
-  const { loading, data, error, previousData, fetchMore } = useQuery(FEED_QUERY, {
-    variables: {
-      skip: linksState.prevSkip,
-      take: LINKS_PER_FETCH
-    },
+  const { loading, data, error, fetchMore } = useQuery(FEED_QUERY, {
+    variables: { take: LINKS_PER_FETCH },
     onCompleted: () => {
-      console.log(previousData);
+      console.log('Feed Query completed');
     }
   });
 
-  // const cachedLinks  = client.readQuery({
-  //   query: FEED_QUERY,
-  //   variables: {
-  //     skip: linksState.prevSkip,
-  //     take: LINKS_PER_PAGE
-  //   }
-  // });
-  // console.log('cachedLinks: ', cachedLinks);
+  const fetchMoreHandler = async () => {
 
-  const fetchPageHandler = () => {
-    let skip = linksState.prevSkip + LINKS_PER_FETCH;
-
-    fetchMore({
-      variables: { skip, LINKS_PER_FETCH }
-    }).then(fetchedData => {
-      skip = linksState.prevSkip + fetchedData.data.feed.length;
-
-      setLinksState({
-        ...linksState,
-        prevSkip: skip,
-        prevTake: LINKS_PER_FETCH
-      })
-    })
+    await fetchMore({
+      variables: { cursor: data.feed.cursor, take: LINKS_PER_FETCH + 1 }
+    }).then(() =>
+      console.log('FetchMore completed')
+    );
   };
 
   useEffect(() => {
@@ -56,21 +32,19 @@ const LinkList = () => {
   }, []);
 
   useEffect(() => {
-    console.log('linksState: ', linksState);
-    // console.log('data: ', data);
+    console.log('Rerendering');
   });
 
   let links = null;
   if (data) {
-    console.log(data)
-    links = data.feed.links.map(
-      (link, index) => (
+    links = data.feed.links
+      .map((link, index) => (
         <Link
           key={link.id}
           link={link}
           index={index}
         />)
-    );
+      );
   }
 
   return (
@@ -82,7 +56,7 @@ const LinkList = () => {
             <>
               {links}
               <div className="flex ml4 mv3 gray">
-                <div className="pointer" onClick={fetchPageHandler}>More</div>
+                <div className="dark-gray fw6 pointer" onClick={fetchMoreHandler}>More</div>
                 {loading ? <p>Loading...</p> : null}
               </div>
             </>

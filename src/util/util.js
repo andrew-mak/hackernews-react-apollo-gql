@@ -46,7 +46,7 @@ export function timeDifferenceForDate(date) {
 }
 
 export const getLinksToRender = data => {
-  const rankedLinks = data.topFeed.slice();
+  const rankedLinks = data.subfeed.slice();
   rankedLinks.sort(
     (l1, l2) => l2.votes.length - l1.votes.length
   );

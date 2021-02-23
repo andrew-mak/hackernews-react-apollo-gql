@@ -56,7 +56,7 @@ const Link = (props) => {
   return (
     <div className="flex mt2 items-start">
       <div className="flex items-center">
-        <span className="gray">{props.index + 1}.</span>
+        <span className="f6 mid-gray">{props.index + 1}.</span>
         {authToken && (
           <div
             className="ml1 gray f11"
@@ -67,11 +67,12 @@ const Link = (props) => {
         )}
       </div>
       <div className="ml1">
-        <div>
-          {link.description} ({link.url})
+        <div className="f6-ns black">
+          {link.description +"\t"}
+          <a href={link.url} className="f7-ns dark-blue no-underline underline-hover">({new URL(link.url).host})</a>
         </div>
         {authToken && (
-          <div className="f6 lh-copy gray">
+          <div className="f7 lh-copy gray">
             {link.votes.length} votes | by{' '}
             {link.postedBy ? link.postedBy.name : 'Unknown'}{' '}
             {timeDifferenceForDate(link.createdAt)}

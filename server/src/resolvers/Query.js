@@ -1,42 +1,51 @@
-async function feed(parent, args, context, info) {
-  const where = args.filter
-    ? {
-      OR: [
-        { description: { contains: args.filter } },
-        { url: { contains: args.filter } }
-      ]
-    }
-    : {};
+async function feed(_, args, context) {
+
+  let cursor = undefined;
+  if (args.cursor) cursor = { id: parseInt(args.cursor) };
 
   const links = await context.prisma.link.findMany({
-    where,
-    skip: args.skip,
-    take: args.take,
-    orderBy: args.orderBy
+    take: (0 - args.take),
+    cursor: cursor,
+    orderBy: { id: 'asc' }
   });
 
-  // const count = await context.prisma.link.count({ where });
-  console.log('SKIP: ', args.skip, ' Links: ', links.length);
-
-  let queryId = `main-feed T:${args.take} S:${args.skip}->${links.length}`;
-  // let queryId = `main-feed`;
-  // if (args.take > 50) queryId = `top-feed-Take:${args.take}->${links.length}`;
+  console.log('SKIP: ', args.cursor, ' Links: ', links.length);
 
   return {
-    id: queryId,
-    links,
-    // count
+    cursor: links[0].id,
+    links: links.reverse(),
   };
 
-  // return [...links]
 }
 
-async function topFeed(parent, args, context, info) {
-  console.log('SKIP: ', args.skip);
-  const result = await feed(parent, args, context, info);
-  return result.links
+async function subfeed(_, args, context) {
+  let links = null;
+  if (args.filter) {
+    const where = args.filter
+      ? {
+        OR: [
+          { description: { contains: args.filter } },
+          { url: { contains: args.filter } }
+        ]
+      }
+      : {};
+    links = await context.prisma.link.findMany({
+      where,
+      orderBy: { id: 'asc' }
+    });
+  }
+  else if (args.take) {
+    links = await context.prisma.link.findMany({
+      take: (0 - args.take),
+      orderBy: { id: 'asc' }
+    });
+  };
+
+  console.log('filter: ', args.filter, ' Links: ', links.length);
+
+  return links
 }
 
 module.exports = {
-  feed, topFeed
+  feed, subfeed
 };

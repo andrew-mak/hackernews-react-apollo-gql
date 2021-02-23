@@ -47,28 +47,25 @@ const cache = new InMemoryCache({
     Query: {
       fields: {
         feed: {
-          keyArgs: ['id'],
-          merge(existing, incoming, { args }) {
-            if (!incoming || incoming.length === 0) {
-              console.log('[Merge] return existing');
-              return existing;
+          merge(existing, incoming, { readField }) {
+            const links = existing ? { ...existing.links } : {};
+            incoming.links.forEach(link => {
+              links[readField("id", link)] = link;
+            });
+            
+            return {
+              cursor: incoming.cursor,
+              links,
             }
-            if (!existing) {
-              console.log('[Merge] return incoming');
-              return incoming;
+          },
+          read(existing) {
+            if (existing) {
+              return {
+                cursor: existing.cursor,
+                links: Object.values(existing.links).reverse(),
+              };
             }
-
-            // console.log('[Merge] existing: ', existing);
-            // console.log('[Merge] incoming: ', incoming);
-
-            const result = {
-              ...existing,
-              id: incoming.id,
-              links: [...existing, ...incoming],
-          };
-            console.log(result)
-            return result;
-          }
+          },
         }
       }
     },
