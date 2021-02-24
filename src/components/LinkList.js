@@ -1,40 +1,66 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from './Link';
 import { useQuery } from '@apollo/client';
 import { LINKS_PER_FETCH } from '../util/constants';
-import { FEED_QUERY } from '../client/gqlQueries';
+import { FEED_QUERY, NEW_LINKS_SUBSCRIPTION, NEW_VOTES_SUBSCRIPTION } from '../client/gqlQueries';
+import ScrollArrow from './ScrollArrow';
 
 const LinkList = () => {
-  console.log('[LinkList]');
+  const [queryState, setQueryState] = useState({ cursor: null, canFetch: false });
 
   //send Query to GraphQL server
-  const { loading, data, error, fetchMore } = useQuery(FEED_QUERY, {
+  let { loading, data, error, fetchMore, subscribeToMore } = useQuery(FEED_QUERY, {
     variables: { take: LINKS_PER_FETCH },
     onCompleted: () => {
-      // console.log('Feed Query completed');
+      setQueryState({ ...queryState, cursor: data.feed.cursor });
     },
-    onError: error => console.log(error)
+    onError: error => console.log(error.message)
   });
 
-  const fetchMoreHandler = async () => {
-
-    await fetchMore({
-      variables: { cursor: data.feed.cursor, take: LINKS_PER_FETCH + 1 }
-    }).then(() =>
-      console.log('FetchMore completed')
-    ).catch(error => console.log(error));
+  const fetchMoreHandler = () => {
+    setQueryState({ ...queryState, canFetch: true });
   };
+
+  subscribeToMore({
+    document: NEW_LINKS_SUBSCRIPTION,
+    updateQuery: (prev, { subscriptionData }) => {
+      if (!subscriptionData.data) return prev;
+      const newLink = subscriptionData.data.newLink;
+      const exists = prev.feed.links.find(
+        ({ id }) => id === newLink.id
+      );
+      if (exists) return prev;
+
+      return Object.assign({}, prev, {
+        feed: {
+          links: [newLink, ...prev.feed.links],
+          __typename: prev.feed.__typename
+        }
+      });
+    }
+  });
+
+  subscribeToMore({
+    document: NEW_VOTES_SUBSCRIPTION
+  });
+
+  useEffect(() => {
+    if (fetchMore && queryState.canFetch) {
+      fetchMore({
+        variables: { cursor: queryState.cursor, take: LINKS_PER_FETCH + 1 }
+      })
+        .then(response => setQueryState({ canFetch: false, cursor: response.data.feed.cursor }))
+        .catch(error => console.log(error));
+    }
+  }, [queryState.cursor, queryState.canFetch, fetchMore]);
 
   useEffect(() => {
     console.log('MOUNT');
     return () => {
+      fetchMore = subscribeToMore = null;
       console.log('UNMOUNT');
     };
   }, []);
-
-  useEffect(() => {
-    console.log('Rerendering');
-  });
 
   let links = null;
   if (data) {
@@ -56,8 +82,9 @@ const LinkList = () => {
             : links &&
             <>
               {links}
-              <div className="flex ml4 mv3 gray">
-                <div className="dark-gray fw6 pointer" onClick={fetchMoreHandler}>More</div>
+              <div className="flex justify-between ml4 mv3 gray">
+                <div className="fl dark-gray fw6 pointer" onClick={fetchMoreHandler}>More</div>
+                <ScrollArrow styles="mr5 b " />
                 {loading ? <p>Loading...</p> : null}
               </div>
             </>

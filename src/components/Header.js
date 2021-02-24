@@ -7,8 +7,6 @@ const Header = () => {
   const { authToken, setAuth } = useContext(AuthContext);
   const history = useHistory();
 
-  console.log('[Header]');
-
   const logoutHandler = () => {
     setAuth(null);
     history.push(`/`);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { FEED_SEARCH_QUERY } from '../client/gqlQueries';
 import Link from './Link';
+import ScrollArrow from './ScrollArrow';
 
 const Search = () => {
 
@@ -14,10 +15,11 @@ const Search = () => {
   };
 
   const searchButtonHandler = () => {
+    if (searchFilter.trim().length < 1) return
     executeSearch({
       variables: { filter: searchFilter },
-      onError: error => console.log(error),
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-and-network',
+      onError: error => console.log(error)
     });
   };
 
@@ -45,6 +47,7 @@ const Search = () => {
         <button onClick={searchButtonHandler} >OK</button>
       </div>
       {links || message}
+      <div className="mv3 background-gray flex justify-end-ns"><ScrollArrow styles='mr5 ' /></div>
     </>
   );
 };

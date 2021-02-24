@@ -10,7 +10,7 @@ import { AuthContext } from './context/auth-context';
 
 
 function App() {
-  console.log('[App]');
+
   const { authToken } = useContext(AuthContext);
   
   return (

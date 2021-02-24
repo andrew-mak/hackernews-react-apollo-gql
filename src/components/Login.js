@@ -26,8 +26,8 @@ const Login = () => {
       history.push('/');
     },
     onError: error => {
-      console.log(error);
-      setFormState({ ...formState, error: error.message});
+      console.error(error);
+      setFormState({ ...formState, error: error.message });
     }
   });
 
@@ -42,13 +42,15 @@ const Login = () => {
       history.push('/');
     },
     onError: error => {
-      console.log(error);
+      console.error(error);
       setFormState({ ...formState, error: error.message });
     }
   });
 
   const inputChangeHandler = (event, type) => {
+
     let update = {};
+
     switch (type) {
       case 'NAME':
         update = { name: event.target.value }
@@ -65,12 +67,25 @@ const Login = () => {
       default:
         break;
     }
+
     setFormState({
       ...formState,
       ...update,
       error: ''
-    })
+    });
   };
+
+  const beforeAuthorize = () => {
+
+    if ((!formState.login) &&
+      (formState.name.trim().length < 1 || formState.email.trim().length < 1 || formState.password.trim().length < 1)) {
+      setFormState({ ...formState, error: "There should be no empty values." })
+      return
+    }
+    else {
+      (formState.login) ? loginMutQuery() : signupMutQuery()
+    }
+  }
 
   return (
     <div>
@@ -103,7 +118,7 @@ const Login = () => {
       <div className="flex mt3">
         <button
           className="pointer mr2 button"
-          onClick={formState.login ? loginMutQuery : signupMutQuery}>
+          onClick={beforeAuthorize}>
           {formState.login ? 'login' : 'create account'}
         </button>
         <button

@@ -5,11 +5,9 @@ import { LINKS_PER_FETCH } from '../util/constants';
 import { AuthContext } from '../context/auth-context';
 import { VOTE_MUTATION, FEED_QUERY } from '../client/gqlQueries';
 
-const Link = (props) => {
+const Link = React.memo((props) => {
   const { authToken } = useContext(AuthContext);
-  console.log('[Link]');
   const { link } = props;
-
 
   const take = LINKS_PER_FETCH;
   const skip = 0;
@@ -27,7 +25,7 @@ const Link = (props) => {
           skip,
           orderBy
         },
-        onError: error => console.log(error)
+        onError: error => console.error(error)
       });
 
       const updatedLinks = feed.links.map((feedLink) => {
@@ -52,10 +50,10 @@ const Link = (props) => {
           skip,
           orderBy
         },
-        onError: error => console.log(error)
+        onError: error => console.error(error)
       });
     },
-    onError: error => console.log(error)
+    onError: error => console.error(error)
   });
 
   return (
@@ -84,6 +82,6 @@ const Link = (props) => {
       </div>
     </div>
   );
-};
+});
 
 export default Link;

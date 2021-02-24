@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useHistory } from 'react-router';
-import { LINKS_PER_FETCH } from '../util/constants';
-import { FEED_QUERY, CREATE_LINK_MUTATION } from '../client/gqlQueries';
+import { CREATE_LINK_MUTATION } from '../client/gqlQueries';
 
 const LinkForm = () => {
   const [formState, setFormState] = useState({
     description: '',
-    url: ''
+    url: '',
+    error: ''
   });
   const history = useHistory();
 
@@ -17,63 +17,36 @@ const LinkForm = () => {
       description: formState.description,
       url: formState.url
     },
-    onError: error => console.log(error),
+    onError: error => console.log('position 21 ', error.message),
     awaitRefetchQueries: true,
-    update: (cache, { data: { post } }) => {
-      const take = LINKS_PER_FETCH;
-      const skip = 0;
-      const orderBy = { createdAt: 'desc' };
-
-      const data = cache.readQuery({
-        query: FEED_QUERY,
-        variables: {
-          take,
-          skip,
-          orderBy
-        },
-        onError: error => console.log(error)
-      });
-
-      cache.writeQuery({
-        query: FEED_QUERY,
-        data: {
-          feed: {
-            links: [post, ...data.feed.links]
-          }
-        },
-        variables: {
-          take,
-          skip,
-          orderBy
-        },
-        onError: error => console.log(error)
-      });
-    },
-    onCompleted: () => {
-      console.log('Mutation completed');
-      history.push('/new/1')
-    }
+    onCompleted: () => history.push('/new')
   });
 
   const onInputChangeHandler = event => {
+    let update = {};
     if (event.target.id === 'url') {
-      setFormState({
-        ...formState,
-        url: event.target.value
-      });
+      update = { url: event.target.value };
     }
     if (event.target.id === 'description') {
-      setFormState({
-        ...formState,
-        description: event.target.value,
-      });
-    }
+      update = { description: event.target.value }
+    };
+
+    setFormState({
+      ...formState,
+      ...update,
+      error: ''
+    });
+
   };
 
   const onSubmitHandler = async event => {
     event.preventDefault();
-    console.log('WRITE ');
-    await createLink();
+
+    if (formState.url.trim().length < 1 || formState.description.trim().length < 1) {
+      setFormState({ ...formState, error: 'There should be no empty values.' })
+      return
+    }
+    else await createLink()
   }
 
   return (
@@ -97,6 +70,7 @@ const LinkForm = () => {
             onChange={onInputChangeHandler}
           />
         </div>
+        {formState.error && <div className="dark-red f6" >{formState.error}</div>}
         <button type="submit">Submit</button>
       </form>
     </div>
