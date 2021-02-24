@@ -25,7 +25,7 @@ const Link = React.memo((props) => {
           skip,
           orderBy
         },
-        onError: error => console.error(error)
+        onError: error => console.log(error)
       });
 
       const updatedLinks = feed.links.map((feedLink) => {
@@ -50,10 +50,10 @@ const Link = React.memo((props) => {
           skip,
           orderBy
         },
-        onError: error => console.error(error)
+        onError: error => console.log(error)
       });
     },
-    onError: error => console.error(error)
+    onError: error => console.log(error)
   });
 
   return (

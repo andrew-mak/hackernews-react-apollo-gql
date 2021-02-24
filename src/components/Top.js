@@ -12,7 +12,7 @@ const Top = () => {
       skip: 0,
       take: 100
     },
-    fetchPolicy: 'cache-and-network',
+    pollInterval: 12000,
     onError: error => console.log(error)
   });
 
@@ -31,11 +31,13 @@ const Top = () => {
   return (
     <>
       {
-        error ? <pre>{JSON.stringify(error, null, 2)}</pre>
-          : loading ? <p> Loading...</p>
+        error
+          ? <pre>{JSON.stringify(error, null, 2)}</pre>
+          : loading
+            ? <p> Loading...</p>
             : links && links
       }
-      <div className="mv3 background-gray flex justify-end-ns"><ScrollArrow styles='mr5 ' /></div>
+      <ScrollArrow />
     </>
   );
 };

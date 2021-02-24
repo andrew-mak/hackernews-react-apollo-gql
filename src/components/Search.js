@@ -47,7 +47,7 @@ const Search = () => {
         <button onClick={searchButtonHandler} >OK</button>
       </div>
       {links || message}
-      <div className="mv3 background-gray flex justify-end-ns"><ScrollArrow styles='mr5 ' /></div>
+      <ScrollArrow />
     </>
   );
 };

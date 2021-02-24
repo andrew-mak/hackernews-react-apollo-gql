@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-const ScrollArrow = props => {
+const ScrollArrow = React.memo(props => {
 
   const [showScroll, setShowScroll] = useState(false);
 
@@ -19,19 +19,19 @@ const ScrollArrow = props => {
   window.addEventListener('scroll', checkScrollTop);
 
   useEffect(() => {
-    console.log('MOUNT ARROW');
+    // console.log('MOUNT ARROW');
     return () => {
-      console.log('UNMOUNT ARROW');
+      // console.log('UNMOUNT ARROW');
       window.removeEventListener('scroll', checkScrollTop)
     }
-  }, []);
+  }, [checkScrollTop]);
 
   return (
     <div
       onClick={scrollTop}
-      className={props.styles + "b f3 pointer dark-gray"}
+      className={props.styles + " b f3 pointer fixed bottom-1 right-2 dark-gray"}
       style={{ display: showScroll ? 'block' : 'none' }}>^</div>
   );
-}
+});
 
 export default ScrollArrow;

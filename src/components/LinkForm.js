@@ -17,7 +17,7 @@ const LinkForm = () => {
       description: formState.description,
       url: formState.url
     },
-    onError: error => console.log('position 21 ', error.message),
+    onError: error => console.log(error.message),
     awaitRefetchQueries: true,
     onCompleted: () => history.push('/new')
   });

@@ -26,7 +26,7 @@ const Login = () => {
       history.push('/');
     },
     onError: error => {
-      console.error(error);
+      console.log(error);
       setFormState({ ...formState, error: error.message });
     }
   });
@@ -42,7 +42,7 @@ const Login = () => {
       history.push('/');
     },
     onError: error => {
-      console.error(error);
+      console.log(error);
       setFormState({ ...formState, error: error.message });
     }
   });
