@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Link from './Link';
 import { useQuery } from '@apollo/client';
+import Link from '../components/Link';
+import Layout from '../components/Layout';
+import { FEED_QUERY, NEW_VOTES_SUBSCRIPTION, NEW_LINKS_SUBSCRIPTION } from '../Graphql/gqlQueries';
 import { LINKS_PER_FETCH } from '../util/constants';
-import { FEED_QUERY, NEW_VOTES_SUBSCRIPTION, NEW_LINKS_SUBSCRIPTION } from '../client/gqlQueries';
-import ScrollArrow from './ScrollArrow';
 
-const LinkList = () => {
+const New = () => {
   const [queryState, setQueryState] = useState({ cursor: null, canFetch: false });
 
   //send Query to GraphQL server
@@ -22,7 +22,7 @@ const LinkList = () => {
   };
 
   useEffect(() => {
-    subscribeToMore({
+    const unsubscribe = subscribeToMore({
       document: NEW_LINKS_SUBSCRIPTION,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
@@ -44,6 +44,8 @@ const LinkList = () => {
     subscribeToMore({
       document: NEW_VOTES_SUBSCRIPTION
     });
+
+    return () => unsubscribe();
 
   }, [subscribeToMore])
 
@@ -77,7 +79,7 @@ const LinkList = () => {
   }
 
   return (
-    <>
+    <Layout>
       {
         error
           ? <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -88,12 +90,11 @@ const LinkList = () => {
               {links}
               <div className="flex justify-between ml4 mv3 gray">
                 <div className="fl dark-gray fw6 pointer" onClick={fetchMoreHandler}>More</div>
-                <ScrollArrow />
               </div>
             </>
       }
-    </>
+    </Layout>
   );
 };
 
-export default LinkList;
+export default New;

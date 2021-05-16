@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
+import { LOGIN_MUTATION, SIGNUP_MUTATION } from '../Graphql/gqlQueries';
+import Layout from '../components/Layout';
 import { AuthContext } from '../context/auth-context';
-import { LOGIN_MUTATION, SIGNUP_MUTATION } from '../client/gqlQueries';
 
 const Login = () => {
 
@@ -88,7 +89,7 @@ const Login = () => {
   }
 
   return (
-    <div>
+    <Layout>
       <h4 className="mv3">
         {formState.login ? 'Login' : 'Sign Up'}
       </h4>
@@ -129,7 +130,7 @@ const Login = () => {
             : 'already have an account?'}
         </button>
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles/index.css';
-import App from './App';
 import { BrowserRouter } from 'react-router-dom';
-import ApolloClient from './client/apolloClientConfig';
-import reportWebVitals from './reportWebVitals';
 import { ApolloProvider } from '@apollo/client';
+import ApolloClient from './Apollo/client';
+import App from './App';
 import AuthProvider from './context/auth-context';
+import './styles/index.css';
+import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>

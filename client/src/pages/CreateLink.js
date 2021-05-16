@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useMutation } from '@apollo/client';
 import { useHistory } from 'react-router';
-import { CREATE_LINK_MUTATION } from '../client/gqlQueries';
+import { useMutation } from '@apollo/client';
+import { CREATE_LINK_MUTATION } from '../Graphql/gqlQueries';
+import Layout from '../components/Layout';
 
-const LinkForm = () => {
+const CreateLink = () => {
   const [formState, setFormState] = useState({
     description: '',
     url: '',
@@ -19,7 +20,9 @@ const LinkForm = () => {
     },
     onError: error => console.log(error.message),
     awaitRefetchQueries: true,
-    onCompleted: () => history.push('/new')
+    onCompleted: () => {
+      history.go(0);
+    }
   });
 
   const onInputChangeHandler = event => {
@@ -46,11 +49,11 @@ const LinkForm = () => {
       setFormState({ ...formState, error: 'There should be no empty values.' })
       return
     }
-    else await createLink()
+    else await createLink();
   }
 
   return (
-    <div>
+    <Layout>
       <form onSubmit={onSubmitHandler}>
         <div className="flex flex-column mt3">
           <input
@@ -73,8 +76,8 @@ const LinkForm = () => {
         {formState.error && <div className="dark-red f6" >{formState.error}</div>}
         <button type="submit">Submit</button>
       </form>
-    </div>
+    </Layout>
   );
 };
 
-export default LinkForm;
+export default CreateLink;

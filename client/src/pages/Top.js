@@ -1,9 +1,9 @@
 import React from 'react';
-import Link from './Link';
 import { useQuery } from '@apollo/client';
-import { FEED_TOP_QUERY } from '../client/gqlQueries';
-import { getLinksToRender } from '../util/util';
-import ScrollArrow from './ScrollArrow';
+import Layout from '../components/Layout';
+import Link from '../components/Link';
+import { FEED_TOP_QUERY } from '../Graphql/gqlQueries';
+import { getLinksToRender } from '../util/dateUtil';
 
 const Top = () => {
   //send Query to GraphQL server
@@ -29,7 +29,7 @@ const Top = () => {
   }
 
   return (
-    <>
+    <Layout>
       {
         error
           ? <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -37,8 +37,7 @@ const Top = () => {
             ? <p> Loading...</p>
             : links && links
       }
-      <ScrollArrow />
-    </>
+    </Layout>
   );
 };
 

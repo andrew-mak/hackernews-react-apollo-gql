@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
-import { FEED_SEARCH_QUERY } from '../client/gqlQueries';
-import Link from './Link';
-import ScrollArrow from './ScrollArrow';
+import Link from '../components/Link';
+import Layout from '../components/Layout';
+import { FEED_SEARCH_QUERY } from '../Graphql/gqlQueries';
 
 const Search = () => {
 
@@ -40,15 +40,14 @@ const Search = () => {
   if (error) message = <p>{error.message + '\n Please, try again.'}</p>
 
   return (
-    <>
+    <Layout>
       <div>
         Search {"\t"}
         <input type="text" onChange={searchFilterHandler} />
         <button onClick={searchButtonHandler} >OK</button>
       </div>
       {links || message}
-      <ScrollArrow />
-    </>
+    </Layout>
   );
 };
 

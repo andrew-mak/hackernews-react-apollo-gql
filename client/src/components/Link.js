@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { useMutation } from '@apollo/client';
-import { timeDifferenceForDate } from '../util/util';
-import { LINKS_PER_FETCH } from '../util/constants';
+import { VOTE_MUTATION, FEED_QUERY } from '../Graphql/gqlQueries';
 import { AuthContext } from '../context/auth-context';
-import { VOTE_MUTATION, FEED_QUERY } from '../client/gqlQueries';
+import { timeDifferenceForDate } from '../util/dateUtil';
+import { LINKS_PER_FETCH } from '../util/constants';
 
 const Link = React.memo((props) => {
   const { authToken } = useContext(AuthContext);
