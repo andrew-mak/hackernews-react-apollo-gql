@@ -10,7 +10,7 @@ const httpLink = createHttpLink({
 });
 
 const wsLink = new WebSocketLink({
-  uri: `ws://${process.env.PUBLIC_API_URL}/graphql`,
+  uri: `ws://hackernews-am.herokuapp.com/graphql`,
   options: {
     reconnect: true,
     connectionParams: {
