@@ -6,7 +6,7 @@ import { AUTH_TOKEN } from '../util/constants';
 
 const httpLink = createHttpLink({
   // uri: 'http://localhost:4000'
-  uri: `https://${process.env.PUBLIC_API_URL}`
+  uri: `https://hackernews-am.herokuapp.com`
 });
 
 const wsLink = new WebSocketLink({
