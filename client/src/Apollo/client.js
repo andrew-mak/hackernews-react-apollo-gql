@@ -5,11 +5,12 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { AUTH_TOKEN } from '../util/constants';
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000'
+  // uri: 'http://localhost:4000'
+  uri: `https://${process.env.PUBLIC_API_URL}`
 });
 
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:4000/graphql`,
+  uri: `ws://${process.env.PUBLIC_API_URL}/graphql`,
   options: {
     reconnect: true,
     connectionParams: {
